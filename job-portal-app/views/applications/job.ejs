@@ -1,0 +1,98 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <div>
+        <h1>Applicants for: <span class="highlight"><%= job.title %></span></h1>
+        <p class="page-sub"><%= job.company %> &middot; <%= job.location %></p>
+      </div>
+      <a href="/jobs/manage" class="btn btn-outline">← Back</a>
+    </div>
+
+    <!-- Filter -->
+    <form class="filter-bar" method="GET" action="/applications/job/<%= job._id %>">
+      <select name="status" onchange="this.form.submit()">
+        <option value="">All Statuses</option>
+        <% ['Pending','Reviewed','Accepted','Rejected'].forEach(s => { %>
+          <option value="<%= s %>" <%= (typeof query !== 'undefined' && query.status === s) ? 'selected' : '' %>><%= s %></option>
+        <% }) %>
+      </select>
+      <a href="/applications/job/<%= job._id %>" class="btn btn-outline">Clear</a>
+    </form>
+
+    <% if (applications.length === 0) { %>
+      <div class="empty-state large">
+        <i class="fas fa-users"></i>
+        <h3>No applications yet</h3>
+        <p>Share your job posting to attract candidates.</p>
+      </div>
+    <% } else { %>
+      <div class="applicant-list">
+        <% applications.forEach(app => { %>
+          <div class="applicant-card">
+            <div class="applicant-info">
+              <div class="applicant-avatar"><i class="fas fa-user-circle"></i></div>
+              <div>
+                <h3><%= app.candidate ? app.candidate.name : 'Unknown' %></h3>
+                <p><i class="fas fa-envelope"></i> <%= app.candidate ? app.candidate.email : '—' %></p>
+                <% if (app.candidate && app.candidate.experience) { %>
+                  <p><i class="fas fa-briefcase"></i> <%= app.candidate.experience %></p>
+                <% } %>
+                <% if (app.candidate && app.candidate.education) { %>
+                  <p><i class="fas fa-graduation-cap"></i> <%= app.candidate.education %></p>
+                <% } %>
+                <% if (app.candidate && app.candidate.skills && app.candidate.skills.length > 0) { %>
+                  <div class="skills-list mt-sm">
+                    <% app.candidate.skills.forEach(s => { %><span class="skill-tag"><%= s %></span><% }) %>
+                  </div>
+                <% } %>
+                <!-- Resume download -->
+                <% if (app.candidate && app.candidate.resume && app.candidate.resume.filename) { %>
+                  <div class="resume-dl-row">
+                    <i class="fas fa-file-pdf" style="color:#ef4444;"></i>
+                    <span class="resume-dl-name"><%= app.candidate.resume.originalName %></span>
+                    <a href="/uploads/resumes/<%= app.candidate.resume.filename %>" target="_blank" class="btn-sm btn-purple">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="/uploads/resumes/<%= app.candidate.resume.filename %>" download="<%= app.candidate.resume.originalName %>" class="btn-sm btn-outline">
+                      <i class="fas fa-download"></i> Download
+                    </a>
+                  </div>
+                <% } else { %>
+                  <p class="no-resume"><i class="fas fa-exclamation-circle"></i> No resume uploaded</p>
+                <% } %>
+              </div>
+            </div>
+
+            <% if (app.coverLetter) { %>
+              <div class="cover-letter">
+                <strong>Cover Letter:</strong>
+                <p><%= app.coverLetter %></p>
+              </div>
+            <% } %>
+
+            <div class="applicant-footer">
+              <div>
+                <span class="status-badge status-<%= app.status.toLowerCase() %>"><%= app.status %></span>
+                <small class="text-muted"> Applied: <%= new Date(app.createdAt).toLocaleDateString() %></small>
+              </div>
+              <!-- Update Status Form -->
+              <form action="/applications/<%= app._id %>/status?_method=PUT" method="POST" class="status-form">
+                <select name="status">
+                  <% ['Pending','Reviewed','Accepted','Rejected'].forEach(s => { %>
+                    <option value="<%= s %>" <%= app.status === s ? 'selected' : '' %>><%= s %></option>
+                  <% }) %>
+                </select>
+                <input type="text" name="recruiterNote" placeholder="Add a note (optional)" value="<%= app.recruiterNote || '' %>" />
+                <button type="submit" class="btn-sm btn-primary">Update</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body></html>

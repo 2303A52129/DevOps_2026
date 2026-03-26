@@ -1,0 +1,67 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <h1>Browse Jobs</h1>
+    </div>
+
+    <form class="filter-bar" method="GET" action="/jobs">
+      <input type="text" name="search" placeholder="Search job title or company..." value="<%= query.search || '' %>" />
+      <select name="category">
+        <option value="">All Categories</option>
+        <% ['Technology','Finance','Marketing','Design','Sales','HR','Operations','Other'].forEach(c => { %>
+          <option value="<%= c %>" <%= query.category === c ? 'selected' : '' %>><%= c %></option>
+        <% }) %>
+      </select>
+      <select name="jobType">
+        <option value="">All Types</option>
+        <% ['Full-time','Part-time','Internship','Contract','Freelance'].forEach(t => { %>
+          <option value="<%= t %>" <%= query.jobType === t ? 'selected' : '' %>><%= t %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="btn btn-primary">Search</button>
+      <a href="/jobs" class="btn btn-outline">Clear</a>
+    </form>
+
+    <% if (jobs.length === 0) { %>
+      <div class="empty-state large">
+        <i class="fas fa-search"></i>
+        <h3>No jobs found</h3>
+        <p>Try adjusting your search filters.</p>
+      </div>
+    <% } else { %>
+      <div class="job-cards">
+        <% jobs.forEach(job => { %>
+          <div class="job-card">
+            <div class="job-card-header">
+              <div>
+                <h3><a href="/jobs/<%= job._id %>"><%= job.title %></a></h3>
+                <p class="job-company"><i class="fas fa-building"></i> <%= job.company %></p>
+              </div>
+              <span class="type-badge"><%= job.jobType %></span>
+            </div>
+            <div class="job-card-meta">
+              <span><i class="fas fa-map-marker-alt"></i> <%= job.location %></span>
+              <span><i class="fas fa-tag"></i> <%= job.category %></span>
+              <% if (job.salary && job.salary !== 'Not disclosed') { %>
+                <span><i class="fas fa-rupee-sign"></i> <%= job.salary %></span>
+              <% } %>
+            </div>
+            <% if (job.skills && job.skills.length > 0) { %>
+              <div class="skills-list">
+                <% job.skills.slice(0,4).forEach(s => { %><span class="skill-tag"><%= s %></span><% }) %>
+              </div>
+            <% } %>
+            <div class="job-card-footer">
+              <small class="text-muted"><i class="fas fa-clock"></i> Posted <%= new Date(job.createdAt).toLocaleDateString() %></small>
+              <a href="/jobs/<%= job._id %>" class="btn btn-primary btn-sm">View & Apply</a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body></html>

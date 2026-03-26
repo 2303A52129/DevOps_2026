@@ -1,0 +1,129 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+
+    <div class="page-header">
+      <div>
+        <h1>Welcome, <%= currentUser.name %>! 👋</h1>
+        <p class="page-sub"><%= currentUser.company ? currentUser.company : 'Recruiter Dashboard' %></p>
+      </div>
+      <a href="/jobs/new" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Post New Job
+      </a>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card stat-blue">
+        <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.totalJobs %></h3>
+          <p>Total Jobs Posted</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-green">
+        <div class="stat-icon"><i class="fas fa-door-open"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.openJobs %></h3>
+          <p>Open Positions</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-purple">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.totalApps %></h3>
+          <p>Total Applicants</p>
+        </div>
+      </div>
+
+      <div class="stat-card stat-yellow">
+        <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-info">
+          <h3><%= stats.pendingApps %></h3>
+          <p>Pending Review</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOB LIST -->
+    <div class="section-card">
+      <h2><i class="fas fa-list"></i> Recent Job Postings</h2>
+
+      <% if (recentJobs.length === 0) { %>
+        <div class="empty-state">
+          <i class="fas fa-plus-circle"></i>
+          <p>No jobs posted yet. <a href="/jobs/new">Post your first job!</a></p>
+        </div>
+      <% } else { %>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Posted</th>
+              <th>Applicants</th>
+              <th>Resume</th> <!-- ✅ NEW COLUMN -->
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <% recentJobs.forEach(job => { %>
+              <tr>
+                <td>
+                  <strong><%= job.title %></strong><br/>
+                  <small><%= job.location %></small>
+                </td>
+
+                <td>
+                  <span class="type-badge"><%= job.jobType %></span>
+                </td>
+
+                <td>
+                  <span class="open-badge <%= job.isOpen ? 'open' : 'closed' %>">
+                    <%= job.isOpen ? 'Open' : 'Closed' %>
+                  </span>
+                </td>
+
+                <td>
+                  <%= new Date(job.createdAt).toLocaleDateString() %>
+                </td>
+
+                <!-- Applicants -->
+                <td>
+                  <a href="/applications/job/<%= job._id %>" class="btn-sm btn-purple">
+                    View Applicants
+                  </a>
+                </td>
+
+                <!-- ✅ Resume Quick Access -->
+                <td>
+                  <span style="color:gray;">View inside Applicants</span>
+                </td>
+
+                <!-- Actions -->
+                <td>
+                  <a href="/jobs/<%= job._id %>/edit" class="btn-sm btn-outline">
+                    Edit
+                  </a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+
+        <a href="/jobs/manage" class="view-all">View all postings →</a>
+
+      <% } %>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

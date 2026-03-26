@@ -1,0 +1,21 @@
+<nav class="navbar">
+  <a href="/dashboard" class="navbar-brand"><i class="fas fa-briefcase"></i> JobPortal</a>
+  <div class="navbar-links">
+    <a href="/jobs">Browse Jobs</a>
+    <% if (currentUser.role === 'recruiter') { %>
+      <a href="/jobs/manage">My Postings</a>
+      <a href="/jobs/new" class="btn btn-primary-sm">+ Post Job</a>
+    <% } %>
+    <% if (currentUser.role === 'candidate') { %>
+      <a href="/applications/my">My Applications</a>
+    <% } %>
+    <a href="/profile">Profile</a>
+  </div>
+  <div class="navbar-user">
+    <span class="role-chip role-<%= currentUser.role %>"><%= currentUser.role %></span>
+    <span class="user-name"><i class="fas fa-user-circle"></i> <%= currentUser.name %></span>
+    <form action="/auth/logout" method="POST" style="display:inline;">
+      <button type="submit" class="btn-logout">Logout</button>
+    </form>
+  </div>
+</nav>

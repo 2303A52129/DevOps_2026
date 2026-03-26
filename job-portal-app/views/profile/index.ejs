@@ -1,0 +1,177 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- LEFT: Account Info -->
+      <div class="profile-col">
+        <div class="form-card">
+          <h2><i class="fas fa-id-card"></i> Account Info</h2>
+          <form action="/profile/update?_method=PUT" method="POST">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" name="name" value="<%= user.name %>" required />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" value="<%= user.email %>" required />
+            </div>
+            <div class="form-group">
+              <label>Role</label>
+              <input type="text" value="<%= user.role %>" disabled />
+            </div>
+
+            <% if (user.role === 'candidate') { %>
+              <div class="form-group">
+                <label>Skills (comma-separated)</label>
+                <input type="text" name="skills" value="<%= user.skills ? user.skills.join(', ') : '' %>" placeholder="e.g. React, Node.js, Python" />
+              </div>
+              <div class="form-group">
+                <label>Experience</label>
+                <input type="text" name="experience" value="<%= user.experience || '' %>" placeholder="e.g. 2 years in web development" />
+              </div>
+              <div class="form-group">
+                <label>Education</label>
+                <input type="text" name="education" value="<%= user.education || '' %>" placeholder="e.g. B.Tech CSE, VIT University" />
+              </div>
+            <% } %>
+
+            <% if (user.role === 'recruiter') { %>
+              <div class="form-group">
+                <label>Company</label>
+                <input type="text" value="<%= user.company || '' %>" disabled />
+              </div>
+              <div class="form-group">
+                <label>Total Applications Received</label>
+                <input type="text" value="<%= totalApps !== null ? totalApps : '—' %>" disabled />
+              </div>
+            <% } %>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+
+        <!-- Change Password -->
+        <div class="form-card" style="margin-top: 20px;">
+          <h2><i class="fas fa-lock"></i> Change Password</h2>
+          <form action="/profile/password?_method=PUT" method="POST">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" name="currentPassword" required />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" name="newPassword" required minlength="6" />
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" name="confirmPassword" required minlength="6" />
+            </div>
+            <button type="submit" class="btn btn-secondary">Change Password</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- RIGHT: Resume (candidates only) -->
+      <% if (user.role === 'candidate') { %>
+      <div class="profile-col">
+        <div class="form-card resume-card">
+          <h2><i class="fas fa-file-pdf"></i> My Resume</h2>
+
+          <% if (user.resume && user.resume.filename) { %>
+            <!-- Resume exists -->
+            <div class="resume-exists">
+              <div class="resume-icon-wrap">
+                <i class="fas fa-file-pdf resume-pdf-icon"></i>
+              </div>
+              <div class="resume-details">
+                <p class="resume-name"><%= user.resume.originalName %></p>
+                <p class="resume-date">Uploaded: <%= new Date(user.resume.uploadedAt).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' }) %></p>
+              </div>
+              <div class="resume-actions">
+                <a href="/uploads/resumes/<%= user.resume.filename %>" target="_blank" class="btn btn-primary">
+                  <i class="fas fa-eye"></i> View
+                </a>
+                <a href="/uploads/resumes/<%= user.resume.filename %>" download="<%= user.resume.originalName %>" class="btn btn-outline">
+                  <i class="fas fa-download"></i> Download
+                </a>
+              </div>
+            </div>
+
+            <!-- Replace resume -->
+            <div class="resume-replace">
+              <p class="replace-label">Replace Resume</p>
+              <form action="/profile/resume" method="POST" enctype="multipart/form-data" class="upload-form">
+                <label class="file-drop" id="dropZone">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span id="fileLabel">Click or drag a PDF here</span>
+                  <input type="file" name="resume" accept=".pdf" id="resumeInput" onchange="updateLabel(this)" />
+                </label>
+                <button type="submit" class="btn btn-secondary btn-block">Upload New Resume</button>
+              </form>
+              <form action="/profile/resume?_method=DELETE" method="POST" onsubmit="return confirm('Delete your resume?')" style="margin-top:10px;">
+                <button type="submit" class="btn btn-danger btn-block"><i class="fas fa-trash"></i> Delete Resume</button>
+              </form>
+            </div>
+
+          <% } else { %>
+            <!-- No resume yet -->
+            <div class="resume-empty">
+              <i class="fas fa-file-upload"></i>
+              <p>No resume uploaded yet.</p>
+              <p class="resume-hint">Upload a PDF (max 5MB) so recruiters can review your profile.</p>
+            </div>
+            <form action="/profile/resume" method="POST" enctype="multipart/form-data" class="upload-form">
+              <label class="file-drop" id="dropZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span id="fileLabel">Click or drag your resume PDF here</span>
+                <input type="file" name="resume" accept=".pdf" id="resumeInput" required onchange="updateLabel(this)" />
+              </label>
+              <button type="submit" class="btn btn-primary btn-block">
+                <i class="fas fa-upload"></i> Upload Resume
+              </button>
+            </form>
+          <% } %>
+        </div>
+
+        <!-- Stats -->
+        <div class="form-card" style="margin-top: 20px;">
+          <h2><i class="fas fa-chart-bar"></i> Stats</h2>
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <span class="ps-number"><%= totalApps %></span>
+              <span class="ps-label">Total Applications</span>
+            </div>
+            <div class="profile-stat">
+              <span class="ps-number"><%= user.skills ? user.skills.length : 0 %></span>
+              <span class="ps-label">Skills Listed</span>
+            </div>
+            <div class="profile-stat">
+              <span class="ps-number"><%= user.resume && user.resume.filename ? '✓' : '✗' %></span>
+              <span class="ps-label">Resume</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function updateLabel(input) {
+  const label = document.getElementById('fileLabel');
+  if (input.files && input.files[0]) {
+    label.textContent = input.files[0].name;
+    document.getElementById('dropZone').classList.add('has-file');
+  }
+}
+</script>
+</body></html>

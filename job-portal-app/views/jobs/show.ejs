@@ -1,0 +1,141 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+
+    <div class="page-header">
+      <a href="/jobs" class="btn btn-outline">← Back to Jobs</a>
+    </div>
+
+    <div class="detail-card">
+
+      <!-- TOP SECTION -->
+      <div class="detail-top">
+        <div>
+          <h1><%= job.title %></h1>
+          <p class="detail-company">
+            <i class="fas fa-building"></i> <%= job.company %>
+            <% if (job.postedBy && job.postedBy.companyWebsite) { %>
+              &nbsp;
+              <a href="<%= job.postedBy.companyWebsite %>" target="_blank" class="small-link">
+                <i class="fas fa-external-link-alt"></i>
+              </a>
+            <% } %>
+          </p>
+        </div>
+
+        <% if (currentUser.role === 'candidate') { %>
+          <% if (!job.isOpen) { %>
+
+            <span class="open-badge closed">Position Closed</span>
+
+          <% } else if (alreadyApplied) { %>
+
+            <span class="already-applied">
+              <i class="fas fa-check-circle"></i> Already Applied
+            </span>
+
+          <% } else { %>
+
+            <!-- ✅ FIXED BUTTON (scroll + show form) -->
+            <button onclick="
+              const form = document.getElementById('apply-form');
+              form.style.display='block';
+              form.scrollIntoView({ behavior: 'smooth' });
+              this.style.display='none';
+            " class="btn btn-primary btn-lg">
+              <i class="fas fa-paper-plane"></i> Apply Now
+            </button>
+
+          <% } %>
+        <% } %>
+      </div>
+
+      <!-- META -->
+      <div class="detail-meta">
+        <span><i class="fas fa-map-marker-alt"></i> <%= job.location %></span>
+        <span><i class="fas fa-briefcase"></i> <%= job.jobType %></span>
+        <span><i class="fas fa-tag"></i> <%= job.category %></span>
+        <% if (job.salary) { %>
+          <span><i class="fas fa-rupee-sign"></i> <%= job.salary %></span>
+        <% } %>
+        <% if (job.deadline) { %>
+          <span><i class="fas fa-calendar"></i>
+            Deadline: <%= new Date(job.deadline).toLocaleDateString() %>
+          </span>
+        <% } %>
+      </div>
+
+      <!-- SKILLS -->
+      <% if (job.skills && job.skills.length > 0) { %>
+        <div class="detail-section">
+          <h3>Skills Required</h3>
+          <div class="skills-list">
+            <% job.skills.forEach(s => { %>
+              <span class="skill-tag"><%= s %></span>
+            <% }) %>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- DESCRIPTION -->
+      <div class="detail-section">
+        <h3>Job Description</h3>
+        <p class="detail-text"><%= job.description %></p>
+      </div>
+
+      <!-- REQUIREMENTS -->
+      <% if (job.requirements) { %>
+        <div class="detail-section">
+          <h3>Requirements</h3>
+          <p class="detail-text"><%= job.requirements %></p>
+        </div>
+      <% } %>
+
+      <!-- APPLY FORM -->
+      <% if (currentUser.role === 'candidate' && job.isOpen && !alreadyApplied) { %>
+        <div id="apply-form" style="display:none; margin-top: 20px;" class="apply-box">
+
+          <h3><i class="fas fa-paper-plane"></i> Submit Application</h3>
+
+          <form action="/applications/<%= job._id %>" method="POST" enctype="multipart/form-data">
+
+            <!-- Cover Letter -->
+            <div class="form-group">
+              <label>Cover Letter (optional)</label>
+              <textarea name="coverLetter" rows="5" maxlength="2000"
+                placeholder="Tell the recruiter why you're a great fit..."></textarea>
+            </div>
+
+            <!-- ✅ RESUME UPLOAD -->
+            <div class="form-group" style="margin-top: 15px;">
+              <label>Upload Resume <span style="color:red">*</span></label>
+              <input type="file" name="resume" accept=".pdf,.doc,.docx" required>
+              <small style="color:gray;">Only PDF/DOC/DOCX (Max 2MB)</small>
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="form-actions">
+              <button type="button"
+                onclick="document.getElementById('apply-form').style.display='none'"
+                class="btn btn-outline">
+                Cancel
+              </button>
+
+              <button type="submit" class="btn btn-primary">
+                Submit Application
+              </button>
+            </div>
+
+          </form>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

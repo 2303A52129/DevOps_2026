@@ -1,0 +1,58 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <h1>My Applications</h1>
+      <a href="/jobs" class="btn btn-primary"><i class="fas fa-search"></i> Browse More Jobs</a>
+    </div>
+
+    <!-- Filter by status -->
+    <form class="filter-bar" method="GET" action="/applications/my">
+      <select name="status" onchange="this.form.submit()">
+        <option value="">All Statuses</option>
+        <% ['Pending','Reviewed','Accepted','Rejected'].forEach(s => { %>
+          <option value="<%= s %>" <%= (typeof query !== 'undefined' && query.status === s) ? 'selected' : '' %>><%= s %></option>
+        <% }) %>
+      </select>
+      <a href="/applications/my" class="btn btn-outline">Clear</a>
+    </form>
+
+    <% if (applications.length === 0) { %>
+      <div class="empty-state large">
+        <i class="fas fa-folder-open"></i>
+        <h3>No applications found</h3>
+        <a href="/jobs" class="btn btn-primary">Browse Jobs</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>Position</th><th>Company</th><th>Type</th><th>Status</th><th>Recruiter Note</th><th>Applied</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+            <% applications.forEach(app => { %>
+              <tr>
+                <td><strong><%= app.job ? app.job.title : 'Job Removed' %></strong></td>
+                <td><%= app.job ? app.job.company : '—' %></td>
+                <td><% if (app.job) { %><span class="type-badge"><%= app.job.jobType %></span><% } %></td>
+                <td><span class="status-badge status-<%= app.status.toLowerCase() %>"><%= app.status %></span></td>
+                <td class="recruiter-note"><%= app.recruiterNote || '—' %></td>
+                <td><%= new Date(app.createdAt).toLocaleDateString() %></td>
+                <td>
+                  <% if (app.status === 'Pending') { %>
+                    <form action="/applications/<%= app._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Withdraw this application?')">
+                      <button type="submit" class="btn-sm btn-danger">Withdraw</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body></html>

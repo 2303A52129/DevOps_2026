@@ -1,0 +1,47 @@
+<%- include('../partials/head') %>
+<%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="page-content">
+    <%- include('../partials/flash') %>
+    <div class="page-header">
+      <h1>My Job Postings</h1>
+      <a href="/jobs/new" class="btn btn-primary"><i class="fas fa-plus"></i> Post New Job</a>
+    </div>
+
+    <% if (jobs.length === 0) { %>
+      <div class="empty-state large">
+        <i class="fas fa-briefcase"></i>
+        <h3>No jobs posted yet</h3>
+        <a href="/jobs/new" class="btn btn-primary">Post Your First Job</a>
+      </div>
+    <% } else { %>
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr><th>Title</th><th>Type</th><th>Category</th><th>Status</th><th>Deadline</th><th>Posted</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            <% jobs.forEach(job => { %>
+              <tr>
+                <td><strong><%= job.title %></strong><br/><small><%= job.location %></small></td>
+                <td><span class="type-badge"><%= job.jobType %></span></td>
+                <td><%= job.category %></td>
+                <td><span class="open-badge <%= job.isOpen ? 'open' : 'closed' %>"><%= job.isOpen ? 'Open' : 'Closed' %></span></td>
+                <td><%= job.deadline ? new Date(job.deadline).toLocaleDateString() : '—' %></td>
+                <td><%= new Date(job.createdAt).toLocaleDateString() %></td>
+                <td class="actions">
+                  <a href="/applications/job/<%= job._id %>" class="btn-sm btn-purple"><i class="fas fa-users"></i> Applicants</a>
+                  <a href="/jobs/<%= job._id %>/edit" class="btn-sm btn-outline"><i class="fas fa-edit"></i> Edit</a>
+                  <form action="/jobs/<%= job._id %>?_method=DELETE" method="POST" style="display:inline;" onsubmit="return confirm('Delete this job?')">
+                    <button type="submit" class="btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+</body></html>
