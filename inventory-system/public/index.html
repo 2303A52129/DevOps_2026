@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Management</title>
+</head>
+<body>
+
+<h2>Add Product</h2>
+<form id="addForm">
+    <input type="text" id="name" placeholder="Name" required><br>
+    <input type="number" id="quantity" placeholder="Quantity" required><br>
+    <input type="number" id="price" placeholder="Price" required><br>
+    <input type="text" id="description" placeholder="Description"><br>
+    <button type="submit">Add Product</button>
+</form>
+
+<h2>Update Product</h2>
+<form id="updateForm">
+    <input type="text" id="updateId" placeholder="Product ID" required><br>
+    <input type="text" id="updateName" placeholder="New Name"><br>
+    <input type="number" id="updateQuantity" placeholder="New Quantity"><br>
+    <input type="number" id="updatePrice" placeholder="New Price"><br>
+    <button type="submit">Update Product</button>
+</form>
+
+<h2>Delete Product</h2>
+<form id="deleteForm">
+    <input type="text" id="deleteId" placeholder="Product ID" required><br>
+    <button type="submit">Delete Product</button>
+</form>
+
+<script>
+// ADD PRODUCT
+document.getElementById("addForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const quantity = document.getElementById("quantity").value;
+    const price = document.getElementById("price").value;
+    const description = document.getElementById("description").value;
+
+    const response = await fetch("/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: name,
+            quantity: Number(quantity),
+            price: Number(price),
+            description: description
+        })
+    });
+
+    const data = await response.json();
+    console.log("Added:", data);
+
+    alert("Product Added Successfully!");
+});
+
+// UPDATE PRODUCT
+document.getElementById("updateForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const id = document.getElementById("updateId").value;
+    const name = document.getElementById("updateName").value;
+    const quantity = document.getElementById("updateQuantity").value;
+    const price = document.getElementById("updatePrice").value;
+
+    const response = await fetch(`/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: name,
+            quantity: Number(quantity),
+            price: Number(price)
+        })
+    });
+
+    const data = await response.json();
+    console.log("Updated:", data);
+
+    alert("Product Updated Successfully!");
+});
+
+// DELETE PRODUCT
+document.getElementById("deleteForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const id = document.getElementById("deleteId").value;
+
+    const response = await fetch(`/products/${id}`, {
+        method: "DELETE"
+    });
+
+    const data = await response.json();
+    console.log("Deleted:", data);
+
+    alert("Product Deleted Successfully!");
+});
+</script>
+
+</body>
+</html>

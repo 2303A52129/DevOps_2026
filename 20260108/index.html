@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Registration</title>
+
+<style>
+    body{
+        margin:0;
+        font-family: Arial;
+
+        /* background image fixed */
+        background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;   /* <-- main property */
+    }
+
+    h1{
+        text-align:center;
+        color:white;
+    }
+
+    form{
+        width:60%;
+        margin:auto;
+        background: rgba(255,255,255,0.9);   /* glass effect */
+        padding:20px;
+        border-radius:12px;
+        margin-top:20px;
+        margin-bottom:40px;
+    }
+
+    fieldset{
+        margin-bottom:15px;
+        border:2px solid #1a73e8;
+        border-radius:10px;
+    }
+
+    legend{
+        font-weight:bold;
+        color:#1a237e;
+    }
+
+    label{
+        display:inline-block;
+        width:140px;
+        margin-top:8px;
+    }
+
+    input, select, textarea{
+        padding:5px;
+        margin-top:5px;
+    }
+
+    button{
+        padding:8px 14px;
+        border:none;
+        border-radius:6px;
+        cursor:pointer;
+        color:white;
+    }
+
+    .btn-submit{ background:#1a73e8; }
+    .btn-reset{ background:#e53935; }
+</style>
+</head>
+
+<body>
+
+<h1>Employee Registration Form</h1>
+
+<form action="#" method="post">
+
+<fieldset>
+<legend>Personal Information</legend>
+
+<label>First Name:</label>
+<input type="text" required><br>
+
+<label>Last Name:</label>
+<input type="text" required><br>
+
+<label>Roll Number:</label>
+<input type="text" required><br>
+
+<label>Date of Birth:</label>
+<input type="date" required><br>
+
+<span>Gender:</span>
+<label><input type="radio" name="gender"> Male</label>
+<label><input type="radio" name="gender"> Female</label>
+<label><input type="radio" name="gender"> Other</label>
+</fieldset>
+
+<fieldset>
+<legend>Contact</legend>
+
+<label>Email:</label>
+<input type="email" required><br>
+
+<label>Phone:</label>
+<input type="tel"><br>
+
+<label>Address:</label><br>
+<textarea rows="3"></textarea>
+</fieldset>
+
+<fieldset>
+<legend>Course & Enrollment</legend>
+
+<label>Course:</label>
+<select>
+<option>-- Select --</option>
+<option>BSc</option>
+<option>BCom</option>
+<option>BA</option>
+<option>MSc</option>
+</select><br>
+
+<label>Enrollment Date:</label>
+<input type="date">
+</fieldset>
+
+<p style="text-align:center;">
+<button class="btn-submit" type="submit">Register</button>
+<button class="btn-reset" type="reset">Reset</button>
+</p>
+
+</form>
+
+</body>
+</html>
